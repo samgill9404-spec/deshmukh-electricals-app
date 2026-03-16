@@ -1,0 +1,5 @@
+{
+  "name": "Deshmukh Electricals",
+  "description": "Inventory management and billing app for electrical shops.",
+  "requestFramePermissions": ["camera"]
+}

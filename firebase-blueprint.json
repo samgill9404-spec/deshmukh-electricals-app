@@ -1,0 +1,94 @@
+{
+  "entities": {
+    "Product": {
+      "title": "Product",
+      "description": "Inventory item details",
+      "type": "object",
+      "properties": {
+        "sku": { "type": "string", "description": "Unique item code" },
+        "name": { "type": "string", "description": "Item name" },
+        "category": { "type": "string", "description": "Category (e.g., Wires, Switches)" },
+        "unit": { "type": "string", "description": "Unit (Pieces, Meters, etc.)" },
+        "price": { "type": "number", "description": "Selling price per unit" },
+        "stock": { "type": "number", "description": "Current stock level" },
+        "imageUrl": { "type": "string", "description": "Base64 or URL of product image" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["sku", "name", "price", "stock"]
+    },
+    "Customer": {
+      "title": "Customer",
+      "description": "Customer contact and credit details",
+      "type": "object",
+      "properties": {
+        "name": { "type": "string", "description": "Customer name" },
+        "phone": { "type": "string", "description": "Phone number" },
+        "balance": { "type": "number", "description": "Outstanding balance" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["name", "phone"]
+    },
+    "Invoice": {
+      "title": "Invoice",
+      "description": "Billing transaction details",
+      "type": "object",
+      "properties": {
+        "invoiceNumber": { "type": "string", "description": "Auto-generated ID" },
+        "date": { "type": "string", "format": "date-time" },
+        "customerName": { "type": "string" },
+        "customerPhone": { "type": "string" },
+        "items": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "productId": { "type": "string" },
+              "name": { "type": "string" },
+              "quantity": { "type": "number" },
+              "price": { "type": "number" },
+              "total": { "type": "number" }
+            }
+          }
+        },
+        "subtotal": { "type": "number" },
+        "tax": { "type": "number" },
+        "discount": { "type": "number" },
+        "total": { "type": "number" },
+        "paymentMethod": { "type": "string" },
+        "amountTendered": { "type": "number" },
+        "changeDue": { "type": "number" }
+      },
+      "required": ["invoiceNumber", "date", "items", "total"]
+    },
+    "AppConfig": {
+      "title": "AppConfig",
+      "description": "Shop details for the header",
+      "type": "object",
+      "properties": {
+        "shopName": { "type": "string" },
+        "shopAddress": { "type": "string" },
+        "contactNumber": { "type": "string" },
+        "gstNumber": { "type": "string" },
+        "lastInvoiceNumber": { "type": "number" }
+      }
+    }
+  },
+  "firestore": {
+    "/products/{productId}": {
+      "schema": "Product",
+      "description": "Collection of inventory items"
+    },
+    "/customers/{customerId}": {
+      "schema": "Customer",
+      "description": "Collection of customer profiles"
+    },
+    "/invoices/{invoiceId}": {
+      "schema": "Invoice",
+      "description": "Collection of billing records"
+    },
+    "/config/shop": {
+      "schema": "AppConfig",
+      "description": "Global shop configuration"
+    }
+  }
+}

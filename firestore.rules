@@ -1,0 +1,70 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // ===============================================================
+    // Assumed Data Model
+    // ===============================================================
+    //
+    // Collection: products
+    // Fields: sku, name, category, unit, price, stock, imageUrl, updatedAt
+    //
+    // Collection: customers
+    // Fields: name, phone, balance, updatedAt
+    //
+    // Collection: invoices
+    // Fields: invoiceNumber, date, customerName, customerPhone, items, subtotal, tax, discount, total, paymentMethod, amountTendered, changeDue
+    //
+    // Collection: config
+    // Document: shop
+    // Fields: shopName, shopAddress, contactNumber, gstNumber, lastInvoiceNumber
+    //
+    // ===============================================================
+
+    // Helper Functions
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    function isAdmin() {
+      return isAuthenticated() &&
+        (get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin' ||
+         (request.auth.token.email == "sam.gill9404@gmail.com" && request.auth.token.email_verified == true));
+    }
+
+    // Default deny
+    match /{document=**} {
+      allow read, write: if isAdmin();
+    }
+
+    // Products
+    match /products/{productId} {
+      allow read: if isAuthenticated();
+      allow write: if isAdmin();
+    }
+
+    // Customers
+    match /customers/{customerId} {
+      allow read: if isAuthenticated();
+      allow write: if isAdmin();
+    }
+
+    // Invoices
+    match /invoices/{invoiceId} {
+      allow read: if isAuthenticated();
+      allow create: if isAuthenticated();
+      allow update, delete: if isAdmin();
+    }
+
+    // Config
+    match /config/shop {
+      allow read: if isAuthenticated();
+      allow write: if isAdmin();
+    }
+    
+    // Users collection for role management
+    match /users/{userId} {
+      allow read: if isAuthenticated() && request.auth.uid == userId;
+      allow write: if isAdmin();
+    }
+  }
+}
